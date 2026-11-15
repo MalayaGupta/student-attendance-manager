@@ -132,3 +132,101 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
+
+/* ---- MARK ATTENDANCE FEATURE ---- */
+
+.attendance-controls {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin: 1rem 0 1.5rem;
+}
+
+.attendance-controls div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.attendance-controls label {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.attendance-controls select,
+.attendance-controls input {
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: white;
+}
+
+.attendance-controls select:focus,
+.attendance-controls input:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.attendance-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+.attendance-table th,
+.attendance-table td {
+  text-align: left;
+  padding: 0.75rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.attendance-table th {
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.attendance-btn {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 0.3rem;
+  font-size: 0.85rem;
+}
+
+.present-btn {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.absent-btn {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.attendance-btn.selected {
+  border: 2px solid currentColor;
+  font-weight: bold;
+}
+
+#save-attendance {
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 600px) {
+  .attendance-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .attendance-controls select,
+  .attendance-controls input {
+    width: 100%;
+  }
+}
