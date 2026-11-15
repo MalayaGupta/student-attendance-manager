@@ -65,3 +65,70 @@ body {
   font-size: 0.9rem;
   margin-top: 0.25rem;
 }
+
+
+/* ---- Manage Students ---- */
+.section-title {
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.05rem;
+}
+
+.inline-form {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.inline-form input {
+  flex: 1 1 140px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.inline-form input:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+
+.btn {
+  padding: 0.5rem 0.9rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: #fff;
+  cursor: pointer;
+}
+
+.btn-primary { background: var(--primary); }
+.btn-danger { background: var(--danger); padding: 0.3rem 0.7rem; }
+.btn:hover { opacity: 0.9; }
+
+.form-msg {
+  min-height: 1.25rem;
+  margin: 0.5rem 0;
+  font-size: 0.85rem;
+}
+.form-msg.ok { color: var(--success); }
+.form-msg.err { color: var(--danger); }
+
+.roster-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.roster-table th,
+.roster-table td {
+  text-align: left;
+  padding: 0.6rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.roster-table th {
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
