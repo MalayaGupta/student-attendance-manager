@@ -230,3 +230,76 @@ body {
     width: 100%;
   }
 }
+
+/* ---- ROLE SWITCHER FEATURE ---- */
+
+#nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+#nav-controls label {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+#view-selector {
+  padding: 0.55rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 6px;
+  background: white;
+  color: var(--text);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+#view-selector:focus {
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+.student-selection {
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 350px;
+}
+
+.student-selection label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.student-selection select {
+  padding: 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.95rem;
+  background: white;
+}
+
+.student-selection select:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+
+.student-profile-card {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 1rem;
+}
+
+.student-profile-card h3 {
+  color: var(--primary);
+  margin-bottom: 0.8rem;
+}
+
+.student-profile-card p {
+  margin-top: 0.5rem;
+}
