@@ -76,7 +76,29 @@ const Store = {
     });
     data.leaves = data.leaves.filter((l) => l.roll !== roll);
 
-    this.saveData(data);
+        this.saveData(data);
     return { ok: true };
+  },
+
+  // Attendance summary for one student: one entry per subject.
+  // Days marked "Leave" are excluded from the total class count.
+  getAttendanceSummary(roll) {
+    const data = this.getData();
+    return data.subjects.map((subject) => {
+      const byDate = data.records[subject.id] || {};
+      let present = 0;
+      let total = 0;
+      Object.values(byDate).forEach((byRoll) => {
+        const status = byRoll[roll];
+        if (status === "Present") {
+          present++;
+          total++;
+        } else if (status === "Absent") {
+          total++;
+        }
+      });
+      const percent = total === 0 ? null : Math.round((present / total) * 1000) / 10;
+      return { id: subject.id, name: subject.name, present, total, percent };
+    });
   }
 };

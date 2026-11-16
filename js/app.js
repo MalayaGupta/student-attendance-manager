@@ -31,6 +31,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Display Student Portal
       studentView.classList.remove("hidden");
+      // Refresh so the latest attendance and students are shown
+      StudentView.init();
 
     }
 
