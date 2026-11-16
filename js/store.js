@@ -167,5 +167,52 @@ const Store = {
     return this.getData()
       .leaves.filter((l) => l.roll === roll)
       .sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id);
+  },
+  
+// Get all pending leave requests
+getPendingLeaves() {
+  const data = this.getData();
+
+  return data.leaves
+    .filter(leave => leave.status === "Pending")
+    .sort((a, b) => a.date.localeCompare(b.date));
+},
+
+// Approve or reject a leave request
+updateLeaveStatus(id, status) {
+  if (status !== "Approved" && status !== "Rejected") {
+    return { ok: false, error: "Invalid leave status." };
   }
+
+  const data = this.getData();
+
+  const leave = data.leaves.find(l => l.id === id);
+
+  if (!leave) {
+    return { ok: false, error: "Leave request not found." };
+  }
+
+  if (leave.status !== "Pending") {
+    return { ok: false, error: "Request already processed." };
+  }
+
+  leave.status = status;
+
+  // Mark approved leave in attendance records
+  if (status === "Approved") {
+    if (!data.records[leave.subjectId]) {
+      data.records[leave.subjectId] = {};
+    }
+
+    if (!data.records[leave.subjectId][leave.date]) {
+      data.records[leave.subjectId][leave.date] = {};
+    }
+
+    data.records[leave.subjectId][leave.date][leave.roll] = "Leave";
+  }
+
+  this.saveData(data);
+
+  return { ok: true };
+}  
 };
