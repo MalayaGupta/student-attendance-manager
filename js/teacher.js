@@ -11,11 +11,16 @@ const TeacherView = {
       </p>
 
       <div id="attendance-section"></div>
-      <div id="roster-section"></div>
+
+<!-- Leave Approval Section -->
+<div id="leave-approval-section"></div>
+
+<div id="roster-section"></div>
     `;
 
     this.renderAttendance();
-    this.renderRoster();
+this.renderLeaveApprovals();
+this.renderRoster();
   },
 
   // FEATURE 1: MARK ATTENDANCE
@@ -224,6 +229,85 @@ const TeacherView = {
 
   // EXISTING FEATURE: MANAGE STUDENTS
   // This code is retained from Malaya's original teacher.js.
+  
+renderLeaveApprovals() {
+  const section = document.getElementById("leave-approval-section");
+  if (!section) return;
+
+  const data = Store.getData();
+  const leaves = Store.getPendingLeaves();
+
+  if (leaves.length === 0) {
+    section.innerHTML = `
+      <h3 class="section-title">Leave Approvals</h3>
+      <p class="muted">No pending leave requests.</p>
+    `;
+    return;
+  }
+
+  const cards = leaves.map(leave => {
+    const student = data.students.find(
+      s => s.roll === leave.roll
+    );
+
+    const subject = data.subjects.find(
+      s => s.id === leave.subjectId
+    );
+
+    return `
+      <div class="leave-request-card">
+        <h4>${this.escape(student ? student.name : "Unknown Student")}</h4>
+        <p><strong>Roll:</strong> ${this.escape(leave.roll)}</p>
+        <p><strong>Subject:</strong> ${this.escape(subject ? subject.name : leave.subjectId)}</p>
+        <p><strong>Date:</strong> ${this.escape(leave.date)}</p>
+        <p><strong>Reason:</strong> ${this.escape(leave.reason)}</p>
+
+        <div class="leave-actions">
+          <button class="btn btn-primary"
+            data-approve="${leave.id}">
+            Approve
+          </button>
+
+          <button class="btn btn-danger"
+            data-reject="${leave.id}">
+            Reject
+          </button>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  section.innerHTML = `
+    <h3 class="section-title">Leave Approvals</h3>
+    <div class="leave-request-list">${cards}</div>
+  `;
+
+  section.querySelectorAll("[data-approve]").forEach(button => {
+    button.addEventListener("click", () => {
+      this.handleLeaveDecision(Number(button.dataset.approve), "Approved");
+    });
+  });
+
+  section.querySelectorAll("[data-reject]").forEach(button => {
+    button.addEventListener("click", () => {
+      this.handleLeaveDecision(Number(button.dataset.reject), "Rejected");
+    });
+  });
+},
+
+handleLeaveDecision(id, status) {
+  const result = Store.updateLeaveStatus(id, status);
+
+  if (!result.ok) {
+    alert(result.error);
+    return;
+  }
+
+  alert(`Leave request ${status.toLowerCase()} successfully!`);
+
+  this.renderLeaveApprovals();
+  this.renderAttendanceTable();
+},
 
   renderRoster(message) {
     const section = document.getElementById("roster-section");
