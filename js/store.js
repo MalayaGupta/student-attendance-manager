@@ -98,7 +98,74 @@ const Store = {
         }
       });
       const percent = total === 0 ? null : Math.round((present / total) * 1000) / 10;
-      return { id: subject.id, name: subject.name, present, total, percent };
+            return { id: subject.id, name: subject.name, present, total, percent };
     });
+  },
+
+  // Today's date as YYYY-MM-DD in the local timezone
+  todayString() {
+    const now = new Date();
+    return new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+      .toISOString()
+      .split("T")[0];
+  },
+
+  // A student applies for leave on one date for one subject.
+  // Returns { ok: true } or { ok: false, error: "message" }
+  applyLeave(roll, subjectId, date, reason) {
+    date = String(date || "").trim();
+    reason = String(reason || "").trim().replace(/\s+/g, " ");
+
+    if (!subjectId || !date || !reason) {
+      return { ok: false, error: "Subject, date and reason are all required." };
+    }
+
+    // Must be a real calendar date such as 2026-11-20 (rejects 2026-02-30)
+    const parsed = new Date(date + "T00:00:00Z");
+    if (
+      !/^\d{4}-\d{2}-\d{2}$/.test(date) ||
+      isNaN(parsed.getTime()) ||
+      parsed.toISOString().slice(0, 10) !== date
+    ) {
+      return { ok: false, error: "Please enter a valid date." };
+    }
+    if (date < this.todayString()) {
+      return { ok: false, error: "Leave cannot be applied for a past date." };
+    }
+    if (reason.length > 200) {
+      return { ok: false, error: "Reason must be 200 characters or fewer." };
+    }
+
+    const data = this.getData();
+    if (!data.students.some((s) => s.roll === roll)) {
+      return { ok: false, error: "Student not found." };
+    }
+    if (!data.subjects.some((s) => s.id === subjectId)) {
+      return { ok: false, error: "Subject not found." };
+    }
+
+    // A rejected request can be re-submitted; pending/approved ones cannot be duplicated
+    const duplicate = data.leaves.some(
+      (l) =>
+        l.roll === roll &&
+        l.subjectId === subjectId &&
+        l.date === date &&
+        l.status !== "Rejected"
+    );
+    if (duplicate) {
+      return { ok: false, error: "You already have a leave request for this subject on that date." };
+    }
+
+    const nextId = data.leaves.reduce((max, l) => Math.max(max, l.id), 0) + 1;
+    data.leaves.push({ id: nextId, roll, subjectId, date, reason, status: "Pending" });
+    this.saveData(data);
+    return { ok: true };
+  },
+
+  // All leave requests of one student, newest date first
+  getLeavesForStudent(roll) {
+    return this.getData()
+      .leaves.filter((l) => l.roll === roll)
+      .sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id);
   }
 };

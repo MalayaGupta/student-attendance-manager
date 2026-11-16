@@ -2,6 +2,9 @@ const ATTENDANCE_THRESHOLD = 75;
 
 const StudentView = {
 
+  // One-time message shown under the leave form after a submit
+  leaveMessage: null,
+
   init() {
 
     const container = document.getElementById("student-content");
@@ -102,7 +105,11 @@ const StudentView = {
 
       ${this.renderAttendance(student.roll)}
 
+      ${this.renderLeaveSection(student.roll)}
+
     `;
+
+    this.bindLeaveForm(student.roll);
 
   },
 
@@ -140,6 +147,112 @@ const StudentView = {
         <p class="muted">${hasData ? `${s.present} of ${s.total} classes attended` : "No classes recorded yet"}</p>
         ${low ? `<p class="warn">Below ${ATTENDANCE_THRESHOLD}% &ndash; attendance shortage</p>` : ""}
       </div>`;
+
+  },
+
+  // ---- Leave application (feature/leave-application) ----
+  renderLeaveSection(roll) {
+
+    const data = Store.getData();
+
+    const subjectOptions = data.subjects.map(subject => `
+      <option value="${this.escape(subject.id)}">${this.escape(subject.name)}</option>
+    `).join("");
+
+    // Show the one-time message, then clear it
+    const message = this.leaveMessage;
+    this.leaveMessage = null;
+
+    const subjectName = id => {
+      const subject = data.subjects.find(s => s.id === id);
+      return subject ? subject.name : id;
+    };
+
+    const leaves = Store.getLeavesForStudent(roll);
+
+    const rows = leaves.length
+      ? leaves.map(leave => `
+        <tr>
+          <td>${this.escape(leave.date)}</td>
+          <td>${this.escape(subjectName(leave.subjectId))}</td>
+          <td>${this.escape(leave.reason)}</td>
+          <td>
+            <span class="status-badge status-${this.escape(leave.status.toLowerCase())}">
+              ${this.escape(leave.status)}
+            </span>
+          </td>
+        </tr>`).join("")
+      : `<tr><td colspan="4" class="muted">No leave requests yet.</td></tr>`;
+
+    return `
+      <h3 class="section-title">Apply for Leave</h3>
+
+      <form id="leave-form" class="leave-form" autocomplete="off">
+
+        <div>
+          <label for="leave-subject">Subject</label>
+          <select id="leave-subject">${subjectOptions}</select>
+        </div>
+
+        <div>
+          <label for="leave-date">Date</label>
+          <input type="date" id="leave-date" min="${Store.todayString()}" />
+        </div>
+
+        <div class="leave-reason">
+          <label for="leave-reason">Reason</label>
+          <input type="text" id="leave-reason" maxlength="200"
+                 placeholder="e.g. Medical appointment" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit Request</button>
+
+      </form>
+
+      <p id="leave-msg" class="form-msg ${message && message.ok ? "ok" : "err"}">${message ? this.escape(message.text) : ""}</p>
+
+      <h3 class="section-title">My Leave Requests</h3>
+
+      <div class="table-scroll">
+        <table class="roster-table">
+          <thead>
+            <tr><th>Date</th><th>Subject</th><th>Reason</th><th>Status</th></tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+
+  },
+
+  bindLeaveForm(roll) {
+
+    const form = document.getElementById("leave-form");
+    if (!form) return;
+
+    form.addEventListener("submit", (e) => {
+
+      e.preventDefault();
+
+      const subjectId = document.getElementById("leave-subject").value;
+      const date = document.getElementById("leave-date").value;
+      const reason = document.getElementById("leave-reason").value;
+
+      const result = Store.applyLeave(roll, subjectId, date, reason);
+
+      if (result.ok) {
+        this.leaveMessage = { ok: true, text: "Leave request submitted. Status: Pending." };
+        this.renderProfile();
+      } else {
+        this.leaveMessage = { ok: false, text: result.error };
+        this.renderProfile();
+
+        // Keep what the student typed so they can fix it
+        document.getElementById("leave-subject").value = subjectId;
+        document.getElementById("leave-date").value = date;
+        document.getElementById("leave-reason").value = reason;
+      }
+
+    });
 
   },
 
