@@ -152,14 +152,19 @@ node tests/leave.test.js
 Each script prints a "passed" message on success and throws an assertion error on failure.
 
 ---
-
 ## 🖼️ Screenshots / Sample Output
 
-Save screenshots in a `screenshots/` folder with the file names below, then commit them.
+### Teacher Dashboard
 
-| Teacher Dashboard | Student Portal |
-|:-----------------:|:--------------:|
-| ![Teacher Dashboard](screenshots/teacher_dashboard_1.png)(screenshots/teacher_dashboard_2.png) | ![Student Portal](screenshots/student_portal_1.png)(screenshots/student_portal_2.png) |
+| Mark Attendance | Manage Students and Leave Approvals |
+|:---------------:|:-----------------------------------:|
+| ![Mark Attendance](screenshots/teacher_dashboard_1.png) | ![Manage Students and Leave Approvals](screenshots/teacher_dashboard_2.png) |
+
+### Student Portal
+
+| Attendance Percentage Cards | Leave Application |
+|:---------------------------:|:-----------------:|
+| ![Attendance Cards](screenshots/student_portal_1.png) | ![Leave Application](screenshots/student_portal_2.png) |
 
 **Sample student attendance cards:**
 
